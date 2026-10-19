@@ -178,6 +178,7 @@ def desifruj_dvojici(matice, znak1, znak2)->str:
     return znaky_desifrovane
 
 
+#rozsirena implemetnace zadani, kvuli poruseni bijektivity...
 def bigramy(text : str)-> tuple[list[str], list[str]]:
     bigramy = []
     metadata = []
@@ -269,6 +270,7 @@ def desifrovaci_algoritmus(sifrovany_text: str, klic: str, parametr_CZ_EN: int) 
     # desifrovani zbyvale hlavicky
     hlavicka = uvod
 
+   
     for i in range(4, delka_hlavicky, 2):
         hlavicka += desifruj_dvojici(matice, telo[i], telo[i+1])
 
@@ -322,7 +324,8 @@ def obnov_znaky(text: str) -> str:
 
     for i, reprezentace in enumerate(cisla):
         text = text.replace(reprezentace, str(i))
-
+    
+    text = text.upper()
     return text
 # po 5 tici
 def formatovat_sifru(text: str) -> str:
@@ -333,6 +336,7 @@ def formatovat_sifru(text: str) -> str:
 
     return " ".join(bloky)
 
+#vytvorení velikost dat k ziskani znalosti o velikosti hlavicky a samotnych dat
 def zakoduj_pocet(pocet: int, jazyk: int) -> str:
     vynechany = "i" if jazyk == 0 else "w"
     abeceda = "".join(z for z in string.ascii_lowercase if z != vynechany)
@@ -355,6 +359,7 @@ def dekoduj_pocet(text: str, jazyk: int) -> int:
     for znak in text:
         if znak not in abeceda:
             raise ValueError("Neplatný znak v hlavičce.")
+        #hornerovo schema
         pocet = pocet * 25 + abeceda.index(znak)
 
     return pocet

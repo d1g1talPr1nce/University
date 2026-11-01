@@ -3,6 +3,7 @@ import string
 import math
 
 def povolena_abeceda(velikost : int, jazyk : str = "CZ")-> str:
+    #velikost udava velikost matice bud 5x5 nebo 6x6 a jazyk udava v jakem jazyku to bude [CZ nebo EN]
     if velikost == 0:
         vynechany = "w" if jazyk == "CZ" else "j"
         return string.ascii_lowercase.replace(vynechany, "")
@@ -21,6 +22,7 @@ def vytvoreni_matice(seed, velikost : int, jazyk: str = "CZ")->list:
         dovolene_znaky_matice = povolena_abeceda(velikost, jazyk)
         
         matice : list = []
+        #k znaci kolik vybrat
         znaky_matice : list = random.sample(dovolene_znaky_matice, k= 25)
         #naplneni matice
         for i in range(0,5):
@@ -73,8 +75,7 @@ def filtrace_textu(vstupni_text : str, velikost : int,jazyk: str = "CZ") -> str:
         list_FL += string_OT
         nahrazovany = "w" if jazyk == "CZ" else "j"
         nahrada = "v" if jazyk == "CZ" else "i"
-        list_FL_map = [
-        nahrada if znak == nahrazovany else znak for znak in list_FL    ]
+        list_FL_map = [nahrada if znak == nahrazovany else znak for znak in list_FL]
 
         return "".join(list_FL_map)
 
@@ -113,7 +114,6 @@ def filtrace_textu(vstupni_text : str, velikost : int,jazyk: str = "CZ") -> str:
         raise ValueError("Nezadali jste správné číslo!")
         
 
-
 def ziskta_klic(vstup_klic : str, velikost : int,jazyk: str = "CZ") -> str:
     if(velikost == 0):
         if not isinstance(vstup_klic, str):
@@ -137,20 +137,14 @@ def ziskta_klic(vstup_klic : str, velikost : int,jazyk: str = "CZ") -> str:
         
         unikatni_znaky_klic : str = ""
         vstup_klic_mapovani:  str = ""
-        #substituce w za v
+        #substituce w za v nebo j za i
         for k in vstup_klic_dovolene_znaky:
             if k == ("w" if jazyk == "CZ" else "j"):
                 k = "v" if jazyk == "CZ" else "i"
             vstup_klic_mapovani = vstup_klic_mapovani + k
-            
-        # odstraneni duplicit
-        for znak in vstup_klic_mapovani: 
-            if(znak not in unikatni_znaky_klic):
-                unikatni_znaky_klic= unikatni_znaky_klic + znak
-            else:
-                continue
         
         return vstup_klic_mapovani
+    
     elif(velikost == 1):
         if not isinstance(vstup_klic, str):
             print("Nezadali jste string, nebo se snažíte poškodit algoritmus! Program se vypne!")
@@ -170,15 +164,6 @@ def ziskta_klic(vstup_klic : str, velikost : int,jazyk: str = "CZ") -> str:
                 continue
             else:
                 vstup_klic_dovolene_znaky = vstup_klic_dovolene_znaky + i
-            
-        unikatni_znaky_klic : str = ""
-                
-        # odstraneni duplicit
-        for znak in vstup_klic_dovolene_znaky: 
-            if(znak not in unikatni_znaky_klic):
-                unikatni_znaky_klic= unikatni_znaky_klic + znak
-            else:
-                continue
             
         return vstup_klic_dovolene_znaky
     else:
@@ -230,14 +215,12 @@ def transpozice_difuze(zasubstituovany_text : str, klic_filtrovany : str)->str:
     
     #mapovani zmenenych indexu mezi filtrovanych klicem a klicem serazenym podle abecedy
     i = 0
-    klic_podle_abecedy : str = "".join(sorted(klic_filtrovany))
-    zmenene_indexy = dict(enumerate(sorted(range(len(klic_filtrovany)),key=lambda i: klic_filtrovany[i]
-        )
-    )
-    )
+    zmenene_indexy = dict(enumerate(sorted(range(len(klic_filtrovany)),key=lambda i: klic_filtrovany[i])))
+  
     i =0
     j = 0
     vysledny_text : str = ""
+    
     #prohozeni slupco podle abecedne serazeneho klice
     for j in range(delka_klicoveho_slova):
         #puvodni index sloupce z dictu
@@ -276,7 +259,6 @@ def inverze_transpozice_difuze(sifrovany_text : str, klic_filtrovany :str)->str:
                         break
                 break
         pocet_radku = i if j == 0 else i+1 
-        pocet_prvku_posledni_radek = j
         #obvnoveni puvodnich sloupco podle permutace
         for k in range(len(klic_filtrovany)):
 
@@ -290,9 +272,7 @@ def inverze_transpozice_difuze(sifrovany_text : str, klic_filtrovany :str)->str:
                 pocet_znaku_sloupce = i
 
             # vybrani prislusne casti sifrovaneho textu
-            vysledek_inverze[index_sloupce_nahradit] = sifrovany_text[
-                pozice:pozice + pocet_znaku_sloupce
-            ]
+            vysledek_inverze[index_sloupce_nahradit] = sifrovany_text[pozice:pozice + pocet_znaku_sloupce]
 
             # posunuti pozice o pocet zpracovanych znaku
             pozice += pocet_znaku_sloupce

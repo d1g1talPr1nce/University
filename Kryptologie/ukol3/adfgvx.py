@@ -252,7 +252,7 @@ def inverze_transpozice_difuze(sifrovany_text : str, klic_filtrovany :str)->str:
         # Urceni pocet rozdeleni
         #pocet takovych radku, ktere maji vsechny hodnoty zaplnene (tedy jsou velikost stejne jako klic)
         i = 0
-        # pocet prvku posledniho radku, tedy maji mensi pocet prvku nez klic a cislo j udava ten pocet (bude vzdycky jeden)
+        # j = L mod k, pocet znaku v poslednim neuplnem radku (0 az k-1).
         j = 0
         while(True):
             if(len(sifrovany_text) >= len(klic_filtrovany)*(i+1)):
@@ -266,11 +266,13 @@ def inverze_transpozice_difuze(sifrovany_text : str, klic_filtrovany :str)->str:
                         break
                 break
         pocet_radku = i if j == 0 else i+1 
+        
         #obvnoveni puvodnich sloupco podle permutace
+        #rozrazeni na sloupce
         for k in range(len(klic_filtrovany)):
 
             # zjisteni puvodniho indexu sloupce
-            index_sloupce_nahradit = zmenene_indexy[k]
+            index_sloupce_nahradit = zmenene_indexy[k] 
 
             # urceni poctu znaku konkretniho sloupce
             if index_sloupce_nahradit < j:
@@ -285,7 +287,7 @@ def inverze_transpozice_difuze(sifrovany_text : str, klic_filtrovany :str)->str:
             pozice += pocet_znaku_sloupce
         
         konec_transpozice_text = ""
-        #prochazeni jednotlivych radku
+        #prochazeni jednotlivych radku, cteni po radcich
         for l in range(pocet_radku):
             #prochazeni sloupcu v puvodnim poradi
             for h in range(len(klic_filtrovany)):

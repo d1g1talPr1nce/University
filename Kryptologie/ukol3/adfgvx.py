@@ -142,8 +142,11 @@ def ziskta_klic(vstup_klic : str, velikost : int,jazyk: str = "CZ") -> str:
             if k == ("w" if jazyk == "CZ" else "j"):
                 k = "v" if jazyk == "CZ" else "i"
             vstup_klic_mapovani = vstup_klic_mapovani + k
-        
-        return vstup_klic_mapovani
+
+        for k in vstup_klic_mapovani:
+            if k not in unikatni_znaky_klic:
+                unikatni_znaky_klic = unikatni_znaky_klic + k
+        return unikatni_znaky_klic
     
     elif(velikost == 1):
         if not isinstance(vstup_klic, str):
@@ -164,8 +167,12 @@ def ziskta_klic(vstup_klic : str, velikost : int,jazyk: str = "CZ") -> str:
                 continue
             else:
                 vstup_klic_dovolene_znaky = vstup_klic_dovolene_znaky + i
-            
-        return vstup_klic_dovolene_znaky
+        unikatni_znaky_klic : str = ""
+        for k in vstup_klic_dovolene_znaky:
+            if k not in unikatni_znaky_klic:
+                unikatni_znaky_klic = unikatni_znaky_klic + k
+        return unikatni_znaky_klic
+       
     else:
         raise ValueError("Nesprávné zadání velikosti")
 

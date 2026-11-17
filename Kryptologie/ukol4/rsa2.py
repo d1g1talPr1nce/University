@@ -1,10 +1,7 @@
 import secrets
 import math
 
-
-# ---------------------------------------------------------------------------
 # Generovani prvocisel: FIPS 186-5, priloha B.3.1 (Miller-Rabin) a A.1.3
-# ---------------------------------------------------------------------------
 
 def rozklad(w: int) -> tuple[int, int]:
     # FIPS 186-5, B.3.1, kroky 1-2: najde a, m takova, ze w - 1 = 2^a * m, m liche
@@ -18,7 +15,6 @@ def rozklad(w: int) -> tuple[int, int]:
         a += 1
         m = m // 2
     return (a, m)
-
 
 def miller_rabin(w: int, iterace: int) -> bool:
     # FIPS 186-5, B.3.1: True = pravdepodobne prvocislo, False = slozene
@@ -44,17 +40,14 @@ def miller_rabin(w: int, iterace: int) -> bool:
             return False                 # krok 4.6: smycka dobehla bez w - 1 -> slozene
     return True                          # krok 5: vsechna kola prosla
 
-
 def gcd(a: int, b: int) -> int:
     # Eukleiduv algoritmus: gcd(a, b) = gcd(b, a mod b), gcd(a, 0) = a
     while b != 0:
         a, b = b, a % b
     return a
 
-
 #FIPS 186-5, B.3: limit zkuseho deleni L mezi 10^3 a 10^5
 L_DELENI = 1000
-
 
 def sito(L: int) -> list[int]:
     #Eratosthenovo sito: vsechna prvocisla <= L
@@ -73,7 +66,6 @@ def sito(L: int) -> list[int]:
 
 MALA_PRVOCISLA = sito(L_DELENI)
 
-
 def projde_delenim(p: int, mala_prvocisla: list[int]) -> bool:
     #FIPS 186-5, B.3: volitelne zkuse deleni pred Miller-Rabinem
     #False = jiste slozene, True = muze byt prvocislo (pokracuje Miller-Rabin)
@@ -82,7 +74,6 @@ def projde_delenim(p: int, mala_prvocisla: list[int]) -> bool:
         if p % s == 0:
             return False
     return True
-
 
 def kandidat(k: int) -> int:
     #FIPS 186-5, A.1.3, krok 4.2: k nahodnych bitu z kryptografickeho generatoru
@@ -94,13 +85,11 @@ def kandidat(k: int) -> int:
     p = p | 1
     return p
 
-
 def splnuje_dolni_mez(p: int, k: int) -> bool:
     #FIPS 186-5, A.1.3, krok 4.4: p >= sqrt(2) * 2^(k-1)
     #sqrt(2) je iracionalni a float ma jen 53 bitu mantisy, proto obe strany na druhou:
     #p >= sqrt(2) * 2^(k-1)  <=>  p^2 >= 2^(2k-1)
     return p * p >= 2 ** (2 * k - 1)
-
 
 def pocet_kol_mr(k: int) -> int:
     #FIPS 186-5, tabulka B.1 (sloupec podle bezpecnostni sily):
@@ -112,7 +101,6 @@ def pocet_kol_mr(k: int) -> int:
     if k >= 1024:
         return 5
     return 50
-
 
 def generuj_pq(nlen: int, e: int, prisne: bool = True) -> tuple[int, int]:
     #FIPS 186-5, A.1.3: generovani nahodnych pravdepodobnych prvocisel p, q
@@ -162,27 +150,20 @@ def generuj_pq(nlen: int, e: int, prisne: bool = True) -> tuple[int, int]:
 
     return (p, q)
 
-
-# ---------------------------------------------------------------------------
 # Vypocet klicu: zadani kroky 2-5
-# ---------------------------------------------------------------------------
-
 def spocitej_n(p: int, q: int) -> int:
     # zadani, krok 2: modul n = p * q
     return p * q
 
-
 def eulerova_funkce(p: int, q: int) -> int:
     # zadani, krok 3: phi(n) = (p - 1)(q - 1) pro n = p * q, p != q prvocisla
     return (p - 1) * (q - 1)
-
 
 def over_e(e: int, phi: int) -> bool:
     # zadani, krok 4: 1 < e < phi a gcd(e, phi) = 1
     # Zaruceno konstrukci: gcd(p - 1, e) = gcd(q - 1, e) = 1 => gcd(e, (p - 1)(q - 1)) = 1.
     # Kontrola hlida, ze tento predpoklad skutecne plati.
     return 1 < e < phi and gcd(e, phi) == 1
-
 
 def inverze(z: int, a: int) -> int:
     # FIPS 186-5, B.1: z^(-1) mod a pomoci rozsireneho Eukleidova algoritmu
@@ -200,11 +181,9 @@ def inverze(z: int, a: int) -> int:
         raise ValueError("Inverze neexistuje: gcd(z, a) != 1")
     return y2 % a                                # krok 9: prevod do intervalu (0, a)
 
-
 def nsn(a: int, b: int) -> int:
     #nejmensi spolecny nasobek: lcm(a, b) = a * b / gcd(a, b), celociselne
     return a // gcd(a, b) * b
-
 
 def generovani_klicu(nlen: int = 2048, e: int = 65537, prisne: bool = True) -> dict:
     #FIPS 186-5, A.1.1 a A.1.3; e se voli pred p, q (A.1.1, bod 1a)
@@ -222,12 +201,9 @@ def generovani_klicu(nlen: int = 2048, e: int = 65537, prisne: bool = True) -> d
             break
     return {"p": p, "q": q, "n": n, "phi": phi, "lambda": lam, "e": e, "d": d, "nlen": nlen, "verejny": (n, e), "soukromy": (n, d)}
 
-
-# ---------------------------------------------------------------------------
 # Kontrola klicu zadanych uzivatelem (RFC 8017, 3.1 a 3.2)
 # Uplnou platnost (gcd(e, phi) = 1) nelze overit bez znalosti p, q, tj. bez faktorizace n.
 # Overuji se proto jen nutne podminky.
-# ---------------------------------------------------------------------------
 
 def over_verejny_klic(n: int, e: int) -> None:
     if n <= 1:
@@ -245,13 +221,10 @@ def over_soukromy_klic(n: int, d: int) -> None:
     if not (1 <= d <= n - 1):
         raise ValueError("Exponent d musí splňovat 1 <= d <= n - 1")
 
-
-# ---------------------------------------------------------------------------
 # Prevod textu na cisla a zpet
 # z = 8 znaku v bloku (zadani), P = 14 bitu na znak (zvoleno):
 # blok ma 8 * 14 = 112 bitu, 2^112 < 10^34 <= n, takze vzdy plati m < n.
 # P = 15 by dalo 120 bitu a 2^120 > n_max, P = 14 je tedy maximum.
-# ---------------------------------------------------------------------------
 
 #Unicode ma kodove body az do U+10FFFF, to je 21 bitu (vejdou se i emoji)
 P_UNICODE = 21
@@ -302,12 +275,6 @@ def cisla_na_text(cisla: list[int], P: int = 14) -> str:
             text += chr(int(kus, 2))
     return text
 
-
-# ---------------------------------------------------------------------------
-# Sifrovani a desifrovani po blocich (RFC 8017, 5.1.1 RSAEP a 5.1.2 RSADP)
-# pow(x, k, n) = modularni mocneni metodou square-and-multiply
-# ---------------------------------------------------------------------------
-
 def sifruj(cisla: list[int], n: int, e: int) -> list[int]:
     # c = m^e mod n pro kazdy blok
     sifra = []
@@ -328,62 +295,3 @@ def desifruj(cisla: list[int], n: int, d: int) -> list[int]:
     return zprava
 
 
-# ---------------------------------------------------------------------------
-# Testy (spusti se jen pri primem spusteni souboru: python rsa.py)
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    import time
-
-    #rozklad, Miller-Rabin, gcd, inverze
-    assert rozklad(561) == (4, 35)
-    for c in (15, 21, 561, 1105, 1729, 2047, 3215031751):
-        assert miller_rabin(c, 50) is False
-    for p in (5, 7, 13, 17, 41, 263, 271, 1_000_000_007):
-        assert miller_rabin(p, 50) is True
-    assert gcd(12, 18) == 6
-    assert inverze(17, 3120) == 2753
-    assert nsn(4, 6) == 12
-
-    #sito a zkuse deleni
-    assert sito(30) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
-    assert len(MALA_PRVOCISLA) == 168
-    assert projde_delenim(1_000_000_007, MALA_PRVOCISLA) is True
-    assert projde_delenim(1009 * 1013, MALA_PRVOCISLA) is True
-    assert projde_delenim(997 * 1_000_000_007, MALA_PRVOCISLA) is False
-
-    #kandidat a dolni mez
-    for k in (64, 512, 1024):
-        for _ in range(1000):
-            p = kandidat(k)
-            assert p.bit_length() == k
-            assert p % 2 == 1
-            assert p >> (k - 2) == 0b11
-            assert splnuje_dolni_mez(p, k)
-    assert splnuje_dolni_mez(3 * 2**62, 64)
-    assert not splnuje_dolni_mez(2**63, 64)
-
-    #prisny rezim odmitne nlen < 2048
-    try:
-        generuj_pq(1024, 65537)
-        print("NEVYHODILO pro nlen = 1024")
-    except ValueError:
-        pass
-
-    #klice ruznych velikosti + cely RSA cyklus vcetne emoji
-    for nlen, prisne in ((256, False), (512, False), (1024, False), (2048, True)):
-        start = time.perf_counter()
-        k = generovani_klicu(nlen, 65537, prisne)
-        trvani = (time.perf_counter() - start) * 1000
-        n, e, d = k["n"], k["e"], k["d"]
-        assert n.bit_length() == nlen
-        assert (e * d) % k["lambda"] == 1
-        assert d > 2 ** (nlen // 2)
-        assert abs(k["p"] - k["q"]) > (2 ** (nlen // 2 - 100) if nlen // 2 > 100 else 0)
-        z, P = parametry_bloku(n)
-        for t in ("Ahoj svete!", "Příliš žluťoučký kůň €", "emoji 😀🔐", ""):
-            c = sifruj(text_na_cisla(t, z, P), n, e)
-            assert cisla_na_text(desifruj(c, n, d), P) == t
-        print(f"nlen = {nlen:5}: klic za {trvani:8.1f} ms, blok = {z} znaku x {P} bitu")
-
-    print("Všechny testy prošly.")

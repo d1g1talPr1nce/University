@@ -136,8 +136,6 @@ def generovani_klicu(e: int = 65537) -> dict:
 
     return {"p": p, "q": q, "n": n, "phi": phi, "e": e, "d": d, "verejny": (n, e), "soukromy": (n, d)}
 
-
-
 # Kontrola klicu zadanych uzivatelem (RFC 8017, 3.1 a 3.2)
 # Uplnou platnost (gcd(e, phi) = 1) nelze overit bez znalosti p, q, tj. bez faktorizace n.
 # Overuji se proto jen nutne podminky
@@ -156,8 +154,6 @@ def over_soukromy_klic(n: int, d: int) -> None:
         raise ValueError("Modul n musí být větší než 1")
     if not (1 <= d <= n - 1):
         raise ValueError("Exponent d musí splňovat 1 <= d <= n - 1")
-
-
 
 # Prevod textu na cisla a zpet
 # z = 8 znaku v bloku (zadani), P = 14 bitu na znak (zvoleno):
